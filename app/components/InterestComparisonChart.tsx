@@ -148,8 +148,8 @@ export default function InterestComparisonChart() {
               step={1000}
               value={[principal]}
               onValueChange={(value) => setPrincipal(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
-            />
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+/>
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -165,7 +165,7 @@ export default function InterestComparisonChart() {
               step={0.1}
               value={[rate]}
               onValueChange={(value) => setRate(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function InterestComparisonChart() {
               step={1}
               value={[time]}
               onValueChange={(value) => setTime(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+             className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
           <div className="space-y-4">

@@ -8,27 +8,70 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 
+// First, add the type definition
+type CompoundFrequencyType = {
+  [key: string]: number;
+  Yearly: number;
+  "Semi-Annually": number;
+  Quarterly: number;
+  Monthly: number;
+  Daily: number;
+}
+
+// Define the frequencies object
+const compoundFrequencies: CompoundFrequencyType = {
+  Yearly: 1,
+  "Semi-Annually": 2,
+  Quarterly: 4,
+  Monthly: 12,
+  Daily: 365,
+} as const
+
 export default function CompoundInterestCalculator() {
   const [principal, setPrincipal] = useState(100000)
   const [rate, setRate] = useState(6)
   const [time, setTime] = useState(5)
-  const [compoundFrequency, setCompoundFrequency] = useState("1")
+  const [compoundFrequency, setCompoundFrequency] = useState("Yearly")
+  const [additionalContribution, setAdditionalContribution] = useState(0)
+  const [contributionFrequency, setContributionFrequency] = useState("Monthly")
   const [result, setResult] = useState<number | null>(null)
 
   const calculateCompoundInterest = () => {
     const p = principal
     const r = rate / 100
     const t = time
-    const n = Number.parseFloat(compoundFrequency)
-    const amount = p * Math.pow(1 + r / n, n * t)
-    const interest = amount - p
+    const n = compoundFrequencies[compoundFrequency]  // compound frequency
+    const pmt = additionalContribution // contribution amount
+    const contributionFreq = compoundFrequencies[contributionFrequency] // contribution frequency
+    
+    let totalAmount = p
+    const paymentsPerYear = contributionFreq
+    const ratePerPeriod = r / n
+    
+    // Calculate for each year
+    for (let year = 0; year < t; year++) {
+      // First compound the current amount
+      totalAmount = totalAmount * Math.pow(1 + ratePerPeriod, n)
+      
+      // Add contributions at the end of each period
+      for (let payment = 0; payment < paymentsPerYear; payment++) {
+        // Calculate remaining periods after this contribution until year end
+        const periodsRemaining = n * ((paymentsPerYear - 1 - payment) / paymentsPerYear)
+        // Add contribution and compound it for remaining periods
+        const contributionWithInterest = pmt * Math.pow(1 + ratePerPeriod, periodsRemaining)
+        totalAmount += contributionWithInterest
+      }
+    }
+
+    const totalContributions = pmt * paymentsPerYear * t
+    const interest = totalAmount - p - totalContributions
     return interest
   }
 
   useEffect(() => {
     const interest = calculateCompoundInterest()
     setResult(interest)
-  }, [principal, rate, time, compoundFrequency, calculateCompoundInterest])
+  }, [principal, rate, time, compoundFrequency, additionalContribution, contributionFrequency, calculateCompoundInterest])
 
   const chartData = result
     ? [
@@ -57,7 +100,7 @@ export default function CompoundInterestCalculator() {
               max={1000000}
               step={1000}
               onValueChange={(value) => setPrincipal(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+             className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
 
@@ -75,7 +118,7 @@ export default function CompoundInterestCalculator() {
               max={20}
               step={0.1}
               onValueChange={(value) => setRate(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
 
@@ -93,8 +136,8 @@ export default function CompoundInterestCalculator() {
               max={30}
               step={1}
               onValueChange={(value) => setTime(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
-            />
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+/>
           </div>
 
           <div className="space-y-4">
@@ -109,21 +152,52 @@ export default function CompoundInterestCalculator() {
                 <SelectValue placeholder="Select frequency" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-gray-800">
-                <SelectItem value="1" className="text-gray-900 dark:text-gray-100">
-                  Annually
-                </SelectItem>
-                <SelectItem value="2" className="text-gray-900 dark:text-gray-100">
-                  Semi-Annually
-                </SelectItem>
-                <SelectItem value="4" className="text-gray-900 dark:text-gray-100">
-                  Quarterly
-                </SelectItem>
-                <SelectItem value="12" className="text-gray-900 dark:text-gray-100">
-                  Monthly
-                </SelectItem>
-                <SelectItem value="365" className="text-gray-900 dark:text-gray-100">
-                  Daily
-                </SelectItem>
+                {Object.keys(compoundFrequencies).map((frequency) => (
+                  <SelectItem key={frequency} value={frequency} className="text-gray-900 dark:text-gray-100">
+                    {frequency}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="additional-contribution" className="text-gray-700 dark:text-gray-300">
+                Additional Contribution
+              </Label>
+              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                ₹{additionalContribution.toLocaleString()}
+              </span>
+            </div>
+            <Slider
+              id="additional-contribution"
+              value={[additionalContribution]}
+              min={0}
+              max={100000}
+              step={1000}
+              onValueChange={(value) => setAdditionalContribution(value[0])}
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <Label htmlFor="contribution-frequency" className="text-gray-700 dark:text-gray-300">
+              Contribution Frequency
+            </Label>
+            <Select value={contributionFrequency} onValueChange={setContributionFrequency}>
+              <SelectTrigger
+                id="contribution-frequency"
+                className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+              >
+                <SelectValue placeholder="Select frequency" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-800">
+                {Object.keys(compoundFrequencies).map((frequency) => (
+                  <SelectItem key={frequency} value={frequency} className="text-gray-900 dark:text-gray-100">
+                    {frequency}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -157,6 +231,12 @@ export default function CompoundInterestCalculator() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-400">Total Contributions</span>
+                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  ₹{(additionalContribution * compoundFrequencies[contributionFrequency] * time).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-gray-400">Total Interest</span>
                 <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   ₹{result.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -165,7 +245,7 @@ export default function CompoundInterestCalculator() {
               <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
                 <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  ₹{(principal + result).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  ₹{(principal + result + (additionalContribution * compoundFrequencies[contributionFrequency] * time)).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
               </div>
             </div>

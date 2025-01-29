@@ -52,7 +52,7 @@ export default function SimpleInterestCalculator() {
               max={1000000}
               step={1000}
               onValueChange={(value) => setPrincipal(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
 
@@ -70,8 +70,8 @@ export default function SimpleInterestCalculator() {
               max={20}
               step={0.1}
               onValueChange={(value) => setRate(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
-            />
+              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+/>
           </div>
 
           <div className="space-y-4">
@@ -88,7 +88,7 @@ export default function SimpleInterestCalculator() {
               max={30}
               step={1}
               onValueChange={(value) => setTime(value[0])}
-              className="bg-gray-200 dark:bg-gray-700"
+             className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
           </div>
         </div>
