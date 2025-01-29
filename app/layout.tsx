@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   description: 'Created with v0',
 }
 
+const donutChartStyles = {
+  track: {
+    stroke: '#e2e8f0',
+  },
+  indicator: {
+    stroke: '#22c55e',
+  }
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{

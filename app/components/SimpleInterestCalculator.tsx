@@ -94,7 +94,7 @@ export default function SimpleInterestCalculator() {
         </div>
 
         <Card className="p-6 bg-gray-50 dark:bg-gray-800">
-          <div className="h-[300px] flex items-center justify-center">
+          <div className="h-[300px] flex items-center justify-center select-none">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -106,8 +106,8 @@ export default function SimpleInterestCalculator() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  <Cell fill="#4F46E5" />
-                  <Cell fill="#818CF8" />
+                  <Cell fill="#22c55e" />
+                  <Cell fill="#86efac" />
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
