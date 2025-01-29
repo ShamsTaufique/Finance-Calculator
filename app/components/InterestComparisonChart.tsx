@@ -19,12 +19,21 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
-const compoundFrequencies = {
+// Add type definition at the top
+type CompoundFrequencyType = {
+  [key: string]: number;
+  Yearly: number;
+  "Half-Yearly": number;
+  Quarterly: number;
+  Monthly: number;
+}
+
+const compoundFrequencies: CompoundFrequencyType = {
   Yearly: 1,
   "Half-Yearly": 2,
   Quarterly: 4,
   Monthly: 12,
-}
+} as const
 
 export default function InterestComparisonChart() {
   const [principal, setPrincipal] = useState(100000)
@@ -66,9 +75,17 @@ export default function InterestComparisonChart() {
 
   const chartOptions: ChartOptions<"line"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
+        labels: {
+          boxWidth: 10,
+          padding: 10,
+          font: {
+            size: 12
+          }
+        }
       },
       title: {
         display: true,
@@ -192,7 +209,7 @@ export default function InterestComparisonChart() {
           </div>
         </div>
       </div>
-      <div className="h-[400px] bg-white dark:bg-gray-800 p-4 rounded-lg">
+      <div className="h-[400px] lg:h-[400px] md:h-[500px] sm:h-[600px] bg-white dark:bg-gray-800 p-4 rounded-lg">
         <Line options={chartOptions} data={chartData} />
       </div>
     </div>
