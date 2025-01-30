@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card"
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import { Progress } from "@/components/ui/progress"
+import { Printer } from "lucide-react"
 
 // First, add the type definition
 type CompoundFrequencyType = {
@@ -99,6 +100,116 @@ export default function CompoundInterestCalculator() {
     if (progress < 100) return "So close! Can you smell the money? 💰"
     return "You did it! Time to make it rain! 🌧️"
   }
+
+  const handlePrint = () => {
+    const progress = ((principal + (result || 0) + (additionalContribution * compoundFrequencies[contributionFrequency] * time)) / goalAmount * 100).toFixed(1);
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Investment Summary</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                color: #333;
+              }
+              .card {
+                background: #f9fafb;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              }
+              .flex {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 12px 0;
+              }
+              .label {
+                color: #666;
+              }
+              .value {
+                font-weight: 600;
+              }
+              .total {
+                border-top: 1px solid #e5e7eb;
+                margin-top: 16px;
+                padding-top: 16px;
+              }
+              .total .value {
+                font-size: 1.25rem;
+                color: #111;
+              }
+              img {
+                width: 100%;
+                max-width: 400px;
+                margin: 20px auto;
+                display: block;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <h2>Investment Summary</h2>
+              
+              <div class="flex">
+                <span class="label">Principal Amount</span>
+                <span class="value">₹${principal.toLocaleString()}</span>
+              </div>
+              <div class="flex">
+                <span class="label">Interest Rate</span>
+                <span class="value">${rate}%</span>
+              </div>
+              <div class="flex">
+                <span class="label">Time Period</span>
+                <span class="value">${time} Years</span>
+              </div>
+              <div class="flex">
+                <span class="label">Compound Frequency</span>
+                <span class="value">${compoundFrequency}</span>
+              </div>
+              ${additionalContribution > 0 ? `
+                <div class="flex">
+                  <span class="label">Additional Contribution</span>
+                  <span class="value">₹${additionalContribution.toLocaleString()} (${contributionFrequency})</span>
+                </div>
+              ` : ''}
+
+              <h3>Results</h3>
+              <div class="flex">
+                <span class="label">Total Interest</span>
+                <span class="value">₹${result?.toLocaleString()}</span>
+              </div>
+              ${additionalContribution > 0 ? `
+                <div class="flex">
+                  <span class="label">Total Contributions</span>
+                  <span class="value">₹${(additionalContribution * compoundFrequencies[contributionFrequency] * time).toLocaleString()}</span>
+                </div>
+              ` : ''}
+              <div class="flex total">
+                <span class="label">Final Amount</span>
+                <span class="value">₹${(principal + (result || 0) + (additionalContribution * compoundFrequencies[contributionFrequency] * time)).toLocaleString()}</span>
+              </div>
+              ${goalAmount > 0 ? `
+                <div class="flex">
+                  <span class="label">Goal Progress</span>
+                  <span class="value">${Math.min(100, Number(progress))}%</span>
+                </div>
+              ` : ''}
+            </div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
 
   return (
     <div className="p-6 space-y-8">
@@ -295,7 +406,7 @@ export default function CompoundInterestCalculator() {
                   className="h-2"
                 />
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>Current Progress: {Math.min(100, ((principal + result + (additionalContribution * compoundFrequencies[contributionFrequency] * time)) / goalAmount * 100).toFixed(1))}%</span>
+                  <span>Current Progress: {Math.min(100, Number(((principal + result + (additionalContribution * compoundFrequencies[contributionFrequency] * time)) / goalAmount * 100).toFixed(1)))}%</span>
                   <span>Goal: ₹{goalAmount.toLocaleString()}</span>
                 </div>
                 {goalAmount > (principal + result + (additionalContribution * compoundFrequencies[contributionFrequency] * time)) && (
@@ -361,17 +472,19 @@ export default function CompoundInterestCalculator() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 dark:text-gray-400">Total Contributions</span>
-                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  ₹{(additionalContribution * compoundFrequencies[contributionFrequency] * time).toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-gray-400">Total Interest</span>
                 <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   ₹{result.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
               </div>
+              {additionalContribution > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Total Contributions</span>
+                  <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    ₹{(additionalContribution * compoundFrequencies[contributionFrequency] * time).toLocaleString()}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
                 <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -380,9 +493,16 @@ export default function CompoundInterestCalculator() {
               </div>
             </div>
           )}
+          <Button 
+            onClick={handlePrint}
+            className="mt-4 w-full flex items-center justify-center gap-2"
+            variant="outline"
+          >
+            <Printer className="w-4 h-4" />
+            Print Summary
+          </Button>
         </Card>
       </div>
     </div>
   )
 }
-
