@@ -35,6 +35,11 @@ const compoundFrequencies: CompoundFrequencyType = {
   Monthly: 12,
 } as const
 
+// Add formatNumberInput function
+const formatNumberInput = (value: string) => {
+  return value.replace(/[^0-9.]/g, '')
+}
+
 export default function InterestComparisonChart() {
   const [principal, setPrincipal] = useState(100000)
   const [rate, setRate] = useState(6)
@@ -137,9 +142,33 @@ export default function InterestComparisonChart() {
               <Label htmlFor="principal" className="text-gray-700 dark:text-gray-300">
                 Principal Amount
               </Label>
-              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                ₹{principal.toLocaleString()}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-900 dark:text-gray-100">₹</span>
+                <input
+                  type="text"
+                  value={principal.toLocaleString()}
+                  onChange={(e) => {
+                    const rawValue = formatNumberInput(e.target.value)
+                    const value = Number(rawValue)
+                    if (!isNaN(value)) {
+                      if (value >= 0 && value <= 1000000) {
+                        setPrincipal(value)
+                      } else if (value > 1000000) {
+                        setPrincipal(1000000)
+                      } else {
+                        setPrincipal(0)
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const value = Number(formatNumberInput(e.target.value))
+                    if (value < 1000) {
+                      setPrincipal(1000)
+                    }
+                  }}
+                  className="w-24 text-right bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-primary"
+                />
+              </div>
             </div>
             <Slider
               id="principal"
@@ -156,14 +185,27 @@ export default function InterestComparisonChart() {
               <Label htmlFor="rate" className="text-gray-700 dark:text-gray-300">
                 Interest Rate (%)
               </Label>
-              <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">{rate}%</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={rate}
+                  onChange={(e) => {
+                    const value = Number(formatNumberInput(e.target.value))
+                    if (!isNaN(value) && value >= 0 && value <= 30) {
+                      setRate(value)
+                    }
+                  }}
+                  className="w-16 text-right bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-primary"
+                />
+                <span className="text-gray-900 dark:text-gray-100">%</span>
+              </div>
             </div>
             <Slider
               id="rate"
-              min={1}
-              max={20}
-              step={0.1}
               value={[rate]}
+              min={1}
+              max={30}
+              step={0.1}
               onValueChange={(value) => setRate(value[0])}
               className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
             />
