@@ -58,6 +58,71 @@ export default function InterestComparisonChart() {
     calculateComparison()
   }, [principal, rate, time])
 
+  const handlePrintTable = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Investment Comparison Table</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+                max-width: 800px;
+                margin: 0 auto;
+                background: white;
+                color: #333;
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+              }
+              th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: right;
+              }
+              th {
+                background-color: #f2f2f2;
+              }
+              h2 {
+                text-align: center;
+              }
+            </style>
+          </head>
+          <body>
+            <h2>Investment Comparison Table</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Year</th>
+                  <th>Simple Interest</th>
+                  <th>Compound Interest</th>
+                  <th>Conservative (6%)</th>
+                  <th>Aggressive (15%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${comparisonData.map(data => `
+                  <tr>
+                    <td>${data.year}</td>
+                    <td>₹${data.simpleInterest.toLocaleString()}</td>
+                    <td>₹${data.compoundInterest.toLocaleString()}</td>
+                    <td>₹${data.conservative.toLocaleString()}</td>
+                    <td>₹${data.aggressive.toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
   return (
     <Card className="p-4 md:p-6">
       <Tabs defaultValue="chart" className="space-y-4">
@@ -77,7 +142,7 @@ export default function InterestComparisonChart() {
         </TabsList>
         
         <TabsContent value="chart" className="space-y-4">
-          <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-4 mb-4">
             <label className="flex items-center gap-2 text-sm cursor-pointer">
               <input
                 type="checkbox"
@@ -158,14 +223,24 @@ export default function InterestComparisonChart() {
                 />
                 <Legend 
                   verticalAlign="bottom" 
-                  height={50}
+                  height={80}
                   wrapperStyle={{
                     paddingTop: '20px',
                     fontSize: '12px',
-                    bottom: '0px'
+                    bottom: '0px',
+                    display: 'flex',
+                    flexWrap: 'wrap',  // Allow wrapping
+                    justifyContent: 'center',  // Center the items
+                    columnGap: '100px',  // Space between items in a row
+                    rowGap: '16px',     // Space between rows
+                    width: '100%',
+                    maxWidth: '100%',
+                    margin: '0 auto'
+                  
                   }}
                   iconSize={10}
                   iconType="plainline"
+                  align="center"
                   layout="horizontal"
                   margin={{ top: 20 }}
                 />
@@ -282,6 +357,14 @@ export default function InterestComparisonChart() {
           />
         </div>
       </div>
+
+      <Button 
+        onClick={handlePrintTable}
+        className="mt-4 w-full flex items-center justify-center gap-2"
+        variant="outline"
+      >
+        Print Comparison Table
+      </Button>
     </Card>
   )
 }
