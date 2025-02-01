@@ -334,7 +334,7 @@ export default function CompoundInterestCalculator() {
         value={additionalContribution.toLocaleString()}
         onChange={(e) => {
           const value = Number(formatNumberInput(e.target.value))
-          if (!isNaN(value) && value >= 0 && value <= 1000000) {  // Updated max value
+          if (!isNaN(value) && value >= 0 && value <= 500000) {  // Updated max value
             setAdditionalContribution(value)
           }
         }}
@@ -346,7 +346,7 @@ export default function CompoundInterestCalculator() {
     id="additional-contribution"
     value={[additionalContribution]}
     min={0}
-    max={1000000}  // Updated max value
+    max={500000}  // Updated max value
     step={1000}
     onValueChange={(value) => setAdditionalContribution(value[0])}
     className="bg-gray-200 dark:bg-gray-600"
@@ -385,7 +385,7 @@ export default function CompoundInterestCalculator() {
               id="goal"
               value={[goalAmount]}
               min={0}
-              max={10000000}
+              max={50000000}
               step={100000}
               onValueChange={(value) => setGoalAmount(value[0])}
               className="bg-gray-200 dark:bg-gray-600"
