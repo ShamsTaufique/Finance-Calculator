@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
@@ -23,7 +22,7 @@ export default function SimpleInterestCalculator() {
   useEffect(() => {
     const interest = calculateSimpleInterest()
     setResult(interest)
-  }, [principal, rate, time, calculateSimpleInterest]) // Added calculateSimpleInterest to dependencies
+  }, [principal, rate, time])
 
   const chartData = result
     ? [
@@ -80,10 +79,9 @@ export default function SimpleInterestCalculator() {
               max={1000000}
               step={1000}
               onValueChange={(value) => setPrincipal(value[0])}
-              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+              className="bg-gray-200 dark:bg-gray-600"
             />
           </div>
-
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <Label htmlFor="rate" className="text-gray-700 dark:text-gray-300">
@@ -111,10 +109,9 @@ export default function SimpleInterestCalculator() {
               max={30}
               step={0.1}
               onValueChange={(value) => setRate(value[0])}
-              className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+              className="bg-gray-200 dark:bg-gray-600"
             />
           </div>
-
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <Label htmlFor="time" className="text-gray-700 dark:text-gray-300">
@@ -129,11 +126,10 @@ export default function SimpleInterestCalculator() {
               max={30}
               step={1}
               onValueChange={(value) => setTime(value[0])}
-             className="bg-gray-200 dark:bg-gray-600 [&>.relative]:dark:bg-gray-500 [&>span]:dark:bg-gray-500"
+              className="bg-gray-200 dark:bg-gray-600"
             />
           </div>
         </div>
-
         <Card className="p-6 bg-gray-50 dark:bg-gray-800">
           <div className="h-[300px] flex items-center justify-center select-none">
             <ResponsiveContainer width="100%" height="100%">
@@ -191,4 +187,3 @@ export default function SimpleInterestCalculator() {
     </div>
   )
 }
-
